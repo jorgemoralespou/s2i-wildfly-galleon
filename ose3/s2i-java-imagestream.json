@@ -1,0 +1,23 @@
+{
+   "kind": "ImageStream",
+   "apiVersion": "v1",
+   "metadata": {
+      "name": "s2i-wildfly-galleon"
+   },
+   "spec": {
+      "dockerImageRepository": "quay.io/jorgemoralespou/s2i-wildfly-galleon",
+      "tags": [
+         {
+            "name": "latest",
+            "annotations": {
+               "description": "Wildfly S2I image (Built with Galleon)",
+               "iconClass": "icon-jboss",
+               "tags": "builder,java,maven,widlfly,galleon,ee",
+               "supports": "java:8,maven:3,wildfly:15",
+               "sampleRepo": "https://github.com/jorgemoralespou/galleon-sample-app.git",
+               "version": "1.0"
+            }
+         }
+      ]
+   }
+}

@@ -1,0 +1,12 @@
+== OpenShift S2I Wildfly (built with Galleon)
+
+== Test
+
+To make tests faster, mount local test app and .m2/repository into the container, this makes development much faster
+
+----
+docker build -t s2i-wildfly-galleon .
+docker run -it --rm -v "$(pwd)/test/test-app":"/opt/s2i/destination/src" -v "$(pwd)/.m2-repository:/opt/app-root/src/.m2/repository" --entrypoint bash s2i-wildfly-galleon
+# Inside the container run:
+# /usr/libexec/s2i/assemble
+---- 

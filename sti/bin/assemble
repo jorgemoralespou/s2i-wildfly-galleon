@@ -1,0 +1,25 @@
+#!/bin/bash
+echo "Before assembling"
+
+# Call original assemble
+/usr/local/s2i-original/assemble
+rc=$?
+
+if [ $rc -eq 0 ]; then
+    echo "After successful assembling"
+
+    echo "Run galleon"
+    # Run galleon
+    PROVISIONING_FILE=/opt/app-root/src/provisioning.xml
+    if [ -f ${PROVISIONING_FILE} ]
+    then
+      galleon provision ${PROVISIONING_FILE} --dir=/wildfly-galleon --verbose
+      # Keep /wildfly pristine, and copy to /opt/wildfly for runtime
+      cp -rf /wildfly-galleon/* /opt/wildfly
+    fi
+    echo "Galleon build finished"
+else
+    echo "After failed assembling"
+fi
+
+exit $rc

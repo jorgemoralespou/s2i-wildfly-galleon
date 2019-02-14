@@ -1,0 +1,8 @@
+#Configure demo datasource
+
+embed-server --admin-only=true
+/subsystem=datasources/data-source=tasks-rs-xml-quickstart:add(enabled=true,use-java-context=true,\
+jndi-name="java:jboss/datasources/TasksRsQuickstartDS",\
+connection-url=${env.DB_URL_CONNECTION},\
+driver-name=postgresql,user-name=${env.DB_USER},password=${env.DB_PASSWORD})
+stop-embedded-server
