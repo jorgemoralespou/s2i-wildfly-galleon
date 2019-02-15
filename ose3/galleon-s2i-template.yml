@@ -202,12 +202,81 @@ objects:
           kind: ImageStreamTag
           name: ${APP_NAME}:development
       type: ImageChange
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    labels:
+      app: ${APP_NAME}
+    name: ${APP_NAME}-production
+  spec:
+    replicas: 0
+    selector:
+      app: ${APP_NAME}
+      deploymentconfig: ${APP_NAME}-production
+    strategy:
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        labels:
+          app: ${APP_NAME}
+          deploymentconfig: ${APP_NAME}-production
+      spec:
+        containers:
+        - image: ${APP_NAME}:production
+          imagePullPolicy: Always
+          name: ${APP_NAME}
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 30
+            timeoutSeconds: 2
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - ${APP_NAME}
+        from:
+          kind: ImageStreamTag
+          name: ${APP_NAME}:development
+      type: ImageChange
 - apiVersion: v1
   kind: Service
   metadata:
     labels:
       app: ${APP_NAME}
-    name: ${APP_NAME}
+    name: ${APP_NAME}-development
   spec:
     ports:
     - name: 8080-tcp
@@ -216,7 +285,24 @@ objects:
       targetPort: 8080
     selector:
       app: ${APP_NAME}
-      deploymentconfig: ${APP_NAME}
+      deploymentconfig: ${APP_NAME}-development
+    sessionAffinity: None
+    type: ClusterIP
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: ${APP_NAME}
+    name: ${APP_NAME}-production
+  spec:
+    ports:
+    - name: 8080-tcp
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      app: ${APP_NAME}
+      deploymentconfig: ${APP_NAME}-production
     sessionAffinity: None
     type: ClusterIP
 - apiVersion: route.openshift.io/v1
@@ -230,6 +316,10 @@ objects:
       kind: Service
       name: ${APP_NAME}
       weight: 100
+    alternateBackends:
+      - kind: Service
+        name: my-galleon-s2i-app
+        weight: 0
     port:
       targetPort: 8080-tcp
     wildcardPolicy: None
