@@ -32,6 +32,11 @@ parameters:
   displayName: git branch
   required: true
   value: master
+- name: IMAGE_VERSION
+  description: Image version to use (latest, full, 15.0.1.Final)
+  displayName: Image version
+  required: true
+  value: latest
 objects:
 - apiVersion: image.openshift.io/v1
   kind: ImageStream
@@ -46,7 +51,7 @@ objects:
     - name: latest
       from: 
         kind: ImageStreamTag
-        name: 's2i-wildfly-galleon:latest'
+        name: 's2i-wildfly-galleon:${IMAGE_VERSION}'
         namespace: openshift
 - apiVersion: image.openshift.io/v1
   kind: ImageStream

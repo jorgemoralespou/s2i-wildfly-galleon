@@ -1,12 +1,91 @@
 == OpenShift S2I Wildfly (built with Galleon)
 
-== Test
 
+== Images
+This repository will create 2 images that will be pushed to online docker registry:
+
+- quay.io/jorgemoralespou/s2i-wildfly-galleon:latest
+- quay.io/jorgemoralespou/s2i-wildfly-galleon:15.0.1.Full
+
+
+== Run on OpenShift
+
+Install the Imagestream in the OpenShift namespace:
+
+----
+oc apply -f ose3/galleon-s2i-imagestream.yml -n openshift
+----
+
+This will have installed the Builder images with 3 different versions:
+
+* latest
+* full (This is the latest of the images with cached content)
+* 15.0.1.Final 
+
+Next install the template.
+
+----
+oc apply -f ose3/galleon-s2i-template.yml
+----
+
+Install the template (Create the app):
+
+----
+oc new-app galleon-s2i
+----
+
+This will use the default values in the template. You can always use the OpenShift console, or the parameters on the command line to change these values.
+
+The repository has 3 sample applications that demonstrate the 3 main use-cases:
+
+- Building your own wildfly (test/test-app)
+- Building your own wildfly with additional modules (test/test-app-postgres)
+- Building your own wildfly with minimal footprint (test/test-app-minimal)
+
+You can use the following parameters of the template:
+
+- APP_NAME
+- GIT_REPO
+- GIT_CONTEXT_DIR
+- GIT_BRANCH
+- IMAGE_VERSION: Use latest or full, depending if you want to download the dependencies from maven central or use an image that already has the dependencies cached (although a bigger download). You can also use one of the named versions that will have the cache populated for the specific wildfly release. You can verify the available versions using *oc get is s2i-wildfly-galleon -n openshift*
+
+Example of alternate execution:
+
+----
+oc new-app galleon-s2i -p IMAGE_VERSION=full -p GIT_CONTEXT_DIR=test/test-app-postgres
+----
+
+
+This will create:
+
+* 2 builds and 2 images:
+** A development image, based on openshift/wildfly base image
+** A production image, based on JRE:8 image with just the generated wildfly and the user provided application
+* 2 Deployments:
+** A development deployment and service, with the development image, scaled to 1, and ready to use/test
+** A production deployment and service, with the production image, scaled to 0. If you want to test this variant, scale the deployment to 1, and change the routing weights to this service
+* A route with both services and weights 100 to development and 0 to the production image
+
+
+== Delete the application
+If you haven't provided a different name to your application (param APP_NAME), you can delete it with the following command:
+
+----
+oc delete all -l app=my-galleon-s2i-app
+----
+
+If you have changed the name of the app, use that in the labe selector.
+
+== Test locally before you push
 To make tests faster, mount local test app and .m2/repository into the container, this makes development much faster
 
 ----
 docker build -t s2i-wildfly-galleon .
-docker run -it --rm -v "$(pwd)/test/test-app":"/opt/s2i/destination/src" -v "$(pwd)/.m2-repository:/opt/app-root/src/.m2/repository" --entrypoint bash s2i-wildfly-galleon
+docker run -it --rm --user 1001:root \
+   -v "$(pwd)/test/test-app-postgres":"/opt/s2i/destination/src" \
+   -v "$(pwd)/.m2-repository:/opt/app-root/src/.m2/repository" \
+   --entrypoint bash s2i-wildfly-galleon
 # Inside the container run:
 # /usr/libexec/s2i/assemble
----- 
+----

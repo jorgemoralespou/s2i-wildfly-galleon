@@ -6,7 +6,6 @@
             <include model="standalone" name="standalone.xml"/>
         </default-configs>
     </feature-pack>
-<!--
     <feature-pack location="org.jboss.galleon.demo:postgresql@galleon1:1#1.0"/>
     <config model="standalone" name="standalone.xml">
         <feature spec="subsystem.datasources">
@@ -22,5 +21,4 @@
             </feature>
         </feature>
     </config>
--->
 </installation>

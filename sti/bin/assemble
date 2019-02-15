@@ -39,6 +39,29 @@ function install_wildfly_with_galleon {
   fi
 }
 
+function install_modules {
+  local _file="local-galleon-feature-packs.txt"
+  LOCAL_FPS_FILE="/opt/app-root/src/${_file}"
+  echo "Installing additional modules if file \"${LOCAL_FPS_FILE}\" defined"
+  if [ -e "${LOCAL_FPS_FILE}" ]; then
+    echo "Additional modules file found"
+    while read -r URL; do
+      read -r M2PATH
+      fullpath="$HOME/.m2/repository/$M2PATH"
+      mkdir -p $fullpath
+      curl -skL "${URL}" -o "${fullpath}${URL##*/}"
+      rc=$?
+      [ $rc -eq 0 ] && echo "Installed ${fullpath}${URL##*/}"
+    done < ${LOCAL_FPS_FILE}
+    echo "Additional modules installed"
+  else
+    echo "No additional modules defined"
+  fi
+}
+
+# Install modules
+install_modules
+
 # Install new version of wildfly
 install_wildfly_with_galleon
 rc=$?
