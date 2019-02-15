@@ -314,11 +314,11 @@ objects:
   spec:
     to:
       kind: Service
-      name: ${APP_NAME}
+      name: ${APP_NAME}-development
       weight: 100
     alternateBackends:
       - kind: Service
-        name: my-galleon-s2i-app
+        name:  ${APP_NAME}-production
         weight: 0
     port:
       targetPort: 8080-tcp
