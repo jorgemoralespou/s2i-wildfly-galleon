@@ -25,8 +25,9 @@ RUN cp -prf $STI_SCRIPTS_PATH /usr/local/s2i-original
 COPY ./sti/bin/ $STI_SCRIPTS_PATH
 # ENV S2I_SOURCE_DEPLOYMENTS_FILTER=*.war
 
-RUN mkdir /opt/wildfly && chown -R 1001:0 /opt/wildfly && chmod -R ug+rwX /opt/wildfly && \
-    mkdir /wildfly-galleon && chown -R 1001:0 /wildfly-galleon && chmod -R ug+rwX /wildfly-galleon
+# Outputs will be left under this directory
+RUN mkdir -p /output/deployments && mkdir -p /output/wildfly && \
+    chown -R 1001:0 /output && chmod -R ug+rwX /output
 
 # This default user is created in the base java image
 USER 1001

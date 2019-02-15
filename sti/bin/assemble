@@ -1,23 +1,53 @@
 #!/bin/bash
 echo "Before assembling"
 
-# Call original assemble
-/usr/local/s2i-original/assemble
+OUTPUT_ARTIFACTS_DIR=${OUTPUT_ARTIFACTS_DIR:-"/output/deployments"}
+OUTPUT_WILDFLY_DIR=${OUTPUT_WILDFLY_DIR:-"/output/wildfly"}
+
+function copy_artifacts() {
+  dir=$1
+  types=
+  shift
+  while [ $# -gt 0 ]; do
+    types="$types;$1"
+    shift
+  done
+
+  for d in $(echo $dir | tr "," "\n")
+  do
+    shift
+    for t in $(echo $types | tr ";" "\n")
+    do
+      echo "Coping all $t artifacts from $d directory into $OUTPUT_ARTIFACTS_DIR for later use..."
+      cp -vfp $d/*.$t $OUTPUT_ARTIFACTS_DIR #2> /dev/null
+    done
+  done
+}
+
+function install_wildfly_with_galleon {
+  echo "Run galleon"
+  # Run galleon
+  PROVISIONING_FILE=/opt/s2i/destination/src/provisioning.xml
+  PROVISIONING_FILE_2=/opt/app-root/src/provisioning.xml
+  if [ -f ${PROVISIONING_FILE} ] || [ -f ${PROVISIONING_FILE_2 } ]
+  then
+    galleon provision ${PROVISIONING_FILE} --dir=${OUTPUT_WILDFLY_DIR} --verbose
+    # Replace original /wildfly for runtime in this image
+    rm -rf /wildfly/*
+    cp -prf ${OUTPUT_WILDFLY_DIR}/* /wildfly
+  fi
+}
+
+# Install new version of wildfly
+install_wildfly_with_galleon
 rc=$?
 
 if [ $rc -eq 0 ]; then
     echo "After successful assembling"
-
-    echo "Run galleon"
-    # Run galleon
-    PROVISIONING_FILE=/opt/app-root/src/provisioning.xml
-    if [ -f ${PROVISIONING_FILE} ]
-    then
-      galleon provision ${PROVISIONING_FILE} --dir=/wildfly-galleon --verbose
-      # Keep /wildfly pristine, and copy to /opt/wildfly for runtime
-      cp -rf /wildfly-galleon/* /opt/wildfly
-    fi
-    echo "Galleon build finished"
+    # Call original assemble
+    /usr/local/s2i-original/assemble
+    # Copy built artifacts to output directory
+    copy_artifacts "/wildfly/standalone/deployments" war ear rar jar
 else
     echo "After failed assembling"
 fi
