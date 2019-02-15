@@ -29,7 +29,7 @@ function install_wildfly_with_galleon {
   # Run galleon
   PROVISIONING_FILE=/opt/s2i/destination/src/provisioning.xml
   PROVISIONING_FILE_2=/opt/app-root/src/provisioning.xml
-  if [ -f ${PROVISIONING_FILE} ] || [ -f ${PROVISIONING_FILE_2 } ]
+  if [ -f ${PROVISIONING_FILE} ] || [ -f ${PROVISIONING_FILE_2} ]
   then
     galleon provision ${PROVISIONING_FILE} --dir=${OUTPUT_WILDFLY_DIR} --verbose
     # Replace original /wildfly for runtime in this image
