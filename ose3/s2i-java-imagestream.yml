@@ -1,0 +1,40 @@
+---
+kind: ImageStream
+apiVersion: v1
+metadata:
+  name: s2i-wildfly-galleon
+spec:
+  tags:
+  - name: latest
+    annotations:
+      description: Wildfly S2I image (Built with Galleon)
+      iconClass: icon-jboss
+      tags: builder,java,maven,widlfly,galleon,ee
+      supports: java:8,maven:3,wildfly:15
+      sampleRepo: https://github.com/jorgemoralespou/galleon-sample-app.git
+      version: 'latest'
+    from:
+      kind: DockerImage
+      name: "quay.io/jorgemoralespou/s2i-wildfly-galleon:latest"
+  - name: full
+    annotations:
+      description: Wildfly S2I image (Built with Galleon)
+      iconClass: icon-jboss
+      tags: builder,java,maven,widlfly,galleon,ee
+      supports: java:8,maven:3,wildfly:15
+      sampleRepo: https://github.com/jorgemoralespou/galleon-sample-app.git
+      version: 'full'
+    from:
+      kind: ImageStreamTag
+      name: "15.0.1.Final"
+  - name: 15.0.1.Final
+    annotations:
+      description: Wildfly S2I image (Built with Galleon)
+      iconClass: icon-jboss
+      tags: builder,java,maven,widlfly,galleon,ee
+      supports: java:8,maven:3,wildfly:15
+      sampleRepo: https://github.com/jorgemoralespou/galleon-sample-app.git
+      version: '15.0.1.Final'
+    from:
+      kind: DockerImage
+      name: "quay.io/jorgemoralespou/s2i-wildfly-galleon:15.0.1.Final"

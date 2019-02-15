@@ -1,0 +1,6 @@
+FROM quay.io/jorgemoralespou/s2i-wildfly-galleon:latest
+
+ENV WILDFLY_VERSION=15.0.1.Final
+
+RUN galleon install wildfly:current#${WILDFLY_VERSION} --dir=/tmp/download && \
+    rm -rf /tmp/download

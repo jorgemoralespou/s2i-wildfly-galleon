@@ -46,7 +46,7 @@ objects:
     - name: latest
       from: 
         kind: ImageStreamTag
-        name: 's2i-wildfly-galleon:latest'
+        name: 's2i-wildfly-galleon:full'
         namespace: openshift
 - apiVersion: image.openshift.io/v1
   kind: ImageStream
