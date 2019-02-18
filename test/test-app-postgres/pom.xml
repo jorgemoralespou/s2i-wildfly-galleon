@@ -61,7 +61,11 @@
             <version>1.0.2</version>
             <scope>provided</scope>
         </dependency>
-
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.0</version>
+        </dependency>
         <!-- Import the JAX-RS API, we use provided scope as the API is included in JBoss EAP -->
         <dependency>
             <groupId>org.jboss.spec.javax.ws.rs</groupId>
@@ -78,7 +82,7 @@
             <!-- Use this profile for any OpenShift specific customization your app will need. -->
             <!-- By default that is to put the resulting archive into the 'deployments' folder. -->
             <!-- http://maven.apache.org/guides/mini/guide-building-for-different-environments.html -->
-            <id>sample</id>
+            <id>openshift</id>
             <build>
                 <finalName>DemoApp</finalName>
                 <plugins>
