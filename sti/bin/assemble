@@ -4,6 +4,8 @@ echo "Before assembling"
 OUTPUT_ARTIFACTS_DIR=${OUTPUT_ARTIFACTS_DIR:-"/output/deployments"}
 OUTPUT_WILDFLY_DIR=${OUTPUT_WILDFLY_DIR:-"/output/wildfly"}
 
+INITIAL_SRC_DIR="/opt/s2i/destination/src/"
+
 function copy_artifacts() {
   dir=$1
   types=
@@ -27,21 +29,25 @@ function copy_artifacts() {
 function install_wildfly_with_galleon {
   echo "Run galleon"
   # Run galleon
-  PROVISIONING_FILE=/opt/s2i/destination/src/provisioning.xml
-  PROVISIONING_FILE_2=/opt/app-root/src/provisioning.xml
-  if [ -f ${PROVISIONING_FILE} ] || [ -f ${PROVISIONING_FILE_2} ]
+  local _file="provisioning.xml"
+  PROVISIONING_FILE="${INITIAL_SRC_DIR}${_file}"
+  if [ -f ${PROVISIONING_FILE} ]
   then
     galleon provision ${PROVISIONING_FILE} --dir=${OUTPUT_WILDFLY_DIR} --verbose
-    # Replace original /wildfly for runtime in this image
-    rm -rf /wildfly/*
-    cp -prf ${OUTPUT_WILDFLY_DIR}/* /wildfly
-    chown -R 1001:0 /wildfly && chmod -R ug+rwX /wildfly
+    local ret=$?
+    if [ $ret -eq 0 ]; then
+      # Replace original /wildfly for runtime in this image
+      rm -rf /wildfly/*
+      cp -prf ${OUTPUT_WILDFLY_DIR}/* /wildfly
+      chown -R 1001:0 /wildfly && chmod -R ug+rwX /wildfly
+    fi
+    return $ret
   fi
 }
 
 function install_modules {
   local _file="local-galleon-feature-packs.txt"
-  LOCAL_FPS_FILE="/opt/app-root/src/${_file}"
+  LOCAL_FPS_FILE="${INITIAL_SRC_DIR}${_file}"
   echo "Installing additional modules if file \"${LOCAL_FPS_FILE}\" defined"
   if [ -e "${LOCAL_FPS_FILE}" ]; then
     echo "Additional modules file found"
@@ -67,13 +73,15 @@ install_wildfly_with_galleon
 rc=$?
 
 if [ $rc -eq 0 ]; then
-    echo "After successful assembling"
+    echo "Wildfly succensully created and installed by Galleon"
     # Call original assemble
     /usr/local/s2i-original/assemble
     # Copy built artifacts to output directory
     copy_artifacts "/wildfly/standalone/deployments" war ear rar jar
+    echo "The application has been built and copied into /wildfly/standalone/deployments"
 else
-    echo "After failed assembling"
+    echo "Galleon couldn't install your wildfly install. Check the logs for the real problem"
+    echo "The application has not been built"
 fi
 
 exit $rc
