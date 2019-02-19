@@ -10,7 +10,7 @@
             <exclude name="org.jboss.resteasy.resteasy-jackson-provider"/>
             <exclude name="org.jboss.resteasy.resteasy-jaxb-provider"/>
             <exclude name="org.jboss.resteasy.resteasy-jettison-provider"/>
-            <exclude name="org.jboss.resteasy.resteasy-jsapi-provider"/>
+            <exclude name="org.jboss.resteasy.resteasy-jsapi"/>
             <exclude name="org.jboss.resteasy.resteasy-json-binding-provider"/>
             <exclude name="org.jboss.resteasy.resteasy-json-p-provider"/>
             <exclude name="org.jboss.resteasy.resteasy-multipart-provider"/>
