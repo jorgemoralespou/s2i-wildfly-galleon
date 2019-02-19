@@ -3,7 +3,20 @@
 <installation xmlns="urn:jboss:galleon:provisioning:3.0">
     <feature-pack location="wildfly@maven(org.jboss.universe:community-universe):current/beta">
         <default-configs inherit="false"/>
-        <packages inherit="false"/>
+        <packages inherit="false">
+            <!-- Only keep json jackson2 provider, 11 MB less -->
+            <exclude name="org.jboss.resteasy.resteasy-atom-provider"/>
+            <exclude name="org.jboss.resteasy.resteasy-crypto"/>
+            <exclude name="org.jboss.resteasy.resteasy-jackson-provider"/>
+            <exclude name="org.jboss.resteasy.resteasy-jaxb-provider"/>
+            <exclude name="org.jboss.resteasy.resteasy-jettison-provider"/>
+            <exclude name="org.jboss.resteasy.resteasy-jsapi-provider"/>
+            <exclude name="org.jboss.resteasy.resteasy-json-binding-provider"/>
+            <exclude name="org.jboss.resteasy.resteasy-json-p-provider"/>
+            <exclude name="org.jboss.resteasy.resteasy-multipart-provider"/>
+            <exclude name="org.jboss.resteasy.resteasy-spring"/>
+            <exclude name="org.jboss.resteasy.resteasy-yaml-provider"/>
+        </packages> 
     </feature-pack>
     <config model="standalone" name="standalone.xml">
         <layers>
