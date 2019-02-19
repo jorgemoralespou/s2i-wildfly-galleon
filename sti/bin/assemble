@@ -37,8 +37,10 @@ function install_wildfly_with_galleon {
     local ret=$?
     if [ $ret -eq 0 ]; then
       # Replace original /wildfly for runtime in this image
+      rm -rf /wildfly/.galleon
       rm -rf /wildfly/*
       cp -prf ${OUTPUT_WILDFLY_DIR}/* /wildfly
+      cp -prf ${OUTPUT_WILDFLY_DIR}/.galleon /wildfly/.galleon
       chown -R 1001:0 /wildfly && chmod -R ug+rwX /wildfly
     fi
     return $ret
@@ -73,14 +75,14 @@ install_wildfly_with_galleon
 rc=$?
 
 if [ $rc -eq 0 ]; then
-    echo "Wildfly succensully created and installed by Galleon"
+    echo "WildFly successfully created and installed by Galleon"
     # Call original assemble
     /usr/local/s2i-original/assemble
     # Copy built artifacts to output directory
     copy_artifacts "/wildfly/standalone/deployments" war ear rar jar
     echo "The application has been built and copied into /wildfly/standalone/deployments"
 else
-    echo "Galleon couldn't install your wildfly install. Check the logs for the real problem"
+    echo "Galleon couldn't install your WildFly install. Check the logs for the real problem"
     echo "The application has not been built"
 fi
 
