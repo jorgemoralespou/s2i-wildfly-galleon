@@ -19,7 +19,6 @@ package org.jboss.as.quickstarts.tasksrs.service;
 import java.net.URI;
 import java.security.Principal;
 import java.util.List;
-import java.util.logging.Logger;
 import javax.enterprise.context.RequestScoped;
 
 import javax.inject.Inject;
@@ -81,7 +80,6 @@ public class TaskResource {
     }
 
     @GET
-    @Path("tasks/title")
     // JSON: include "application/json" in the @Produces annotation to include json support
     // @Produces({ "application/xml", "application/json" })
     @Produces({"application/xml"})
