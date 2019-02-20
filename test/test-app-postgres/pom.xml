@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>openshift-demo</groupId>
-    <artifactId>demo</artifactId>
+    <artifactId>demo-postgres</artifactId>
     <packaging>war</packaging>
     <version>1.0</version>
     <name>OpenshiftDemo</name>
