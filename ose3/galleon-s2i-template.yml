@@ -4,7 +4,7 @@ metadata:
   name: galleon-s2i
   annotations:
     iconClass: icon-wildfly
-    openshift.io/display-name: App built with Galleon S2I image
+    openshift.io/display-name: App built with Galleon S2I image and optionally connect to DB
     openshift.io/provider-display-name: Red Hat, Inc.
     template.openshift.io/long-description: Provision WildFly server image using galleon and build/deploy app.
     description: Provision WildFly server image using galleon and build/deploy app.
@@ -37,22 +37,30 @@ parameters:
   displayName: Image version
   required: true
   value: latest
+- name: DB_URL_CONNECTION
+  description: The database jdbc URL.
+  displayName: jdbc URL
+  required: false
+  value: jdbc:postgresql://postgresql:5432/demo
+- name: DB_USER
+  description: The database user name
+  displayName: Database user name
+  required: false
+  value: demo
+- name: DB_PASSWORD
+  description: The database user password
+  displayName: Database user password
+  required: false
+  value: demo
 objects:
-- apiVersion: image.openshift.io/v1
-  kind: ImageStream
+- apiVersion: v1
+  kind: Secret
   metadata:
-    labels:
-      app: ${APP_NAME}
-    name: s2i-wildfly-galleon
-  spec:
-    lookupPolicy:
-      local: true
-    tags:
-    - name: latest
-      from: 
-        kind: ImageStreamTag
-        name: 's2i-wildfly-galleon:${IMAGE_VERSION}'
-        namespace: openshift
+    name: '${APP_NAME}-db-secret'
+  stringData:
+    database-url: '${DB_URL_CONNECTION}'
+    database-password: '${DB_PASSWORD}'
+    database-user: '${DB_USER}'
 - apiVersion: image.openshift.io/v1
   kind: ImageStream
   metadata:
@@ -81,7 +89,7 @@ objects:
       sourceStrategy:
         from:
           kind: ImageStreamTag
-          name: s2i-wildfly-galleon:latest
+          name: s2i-wildfly-galleon:${IMAGE_VERSION}
       type: Source
     triggers:
     - imageChange:
@@ -158,7 +166,23 @@ objects:
           deploymentconfig: ${APP_NAME}-development
       spec:
         containers:
-        - image: ${APP_NAME}:development
+        - env:
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                key: database-user
+                name: '${APP_NAME}-db-secret'
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: database-password
+                name: '${APP_NAME}-db-secret'
+          - name: DB_URL_CONNECTION
+            valueFrom:
+              secretKeyRef:
+                key: database-url
+                name: '${APP_NAME}-db-secret'
+          image: ${APP_NAME}:development
           imagePullPolicy: Always
           name: ${APP_NAME}
           ports:
@@ -227,7 +251,23 @@ objects:
           deploymentconfig: ${APP_NAME}-production
       spec:
         containers:
-        - image: ${APP_NAME}:production
+        - env:
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                key: database-user
+                name: '${APP_NAME}-db-secret'
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: database-password
+                name: '${APP_NAME}-db-secret'
+          - name: DB_URL_CONNECTION
+            valueFrom:
+              secretKeyRef:
+                key: database-url
+                name: '${APP_NAME}-db-secret'
+          image: ${APP_NAME}:production
           imagePullPolicy: Always
           name: ${APP_NAME}
           ports:
