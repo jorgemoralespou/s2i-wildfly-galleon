@@ -1,10 +1,7 @@
 <?xml version="1.0" ?>
 
 <installation xmlns="urn:jboss:galleon:provisioning:3.0">
-    <feature-pack location="wildfly@maven(org.jboss.universe:community-universe):current/beta">
-        <default-configs inherit="false"/>
-        <packages inherit="false"/>
-    </feature-pack>
+    <feature-pack location="wildfly@maven(org.jboss.universe:community-universe):current/beta"/>
     <feature-pack location="org.jboss.galleon.demo:postgresql@galleon1:1#1.0"/>
     <config model="standalone" name="standalone.xml">
         <feature spec="subsystem.datasources">
@@ -19,13 +16,5 @@
                 <param name="password" value="${env.DB_PASSWORD}"/>
             </feature>
         </feature>
-        <layers>
-            <include name="cdi"/>
-            <include name="jaxrs"/>
-            <include name="jpa"/>
-        </layers>
     </config>
-    <options>
-        <option name="optional-packages" value="passive+"/>
-    </options>
 </installation>
