@@ -10,7 +10,7 @@ LABEL io.k8s.description="Platform for building EE applications and Wildfly serv
 
 USER root
 
-ENV GALLEON_VERSION=3.0.1.Final
+ENV GALLEON_VERSION=3.0.2.Final
 RUN curl -sL -0 https://github.com/wildfly/galleon/releases/download/${GALLEON_VERSION}/galleon-${GALLEON_VERSION}.zip -o /tmp/galleon-${GALLEON_VERSION}.zip && \
     unzip /tmp/galleon-${GALLEON_VERSION}.zip -d /usr/local/ && \
     rm /tmp/galleon-${GALLEON_VERSION}.zip && \
