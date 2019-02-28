@@ -33,7 +33,7 @@ parameters:
   required: true
   value: master
 - name: IMAGE_VERSION
-  description: Image version to use (latest, full, 15.0.1.Final)
+  description: Image version to use (latest, full, 16.0.0.Final)
   displayName: Image version
   required: true
   value: latest

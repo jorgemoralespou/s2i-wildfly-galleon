@@ -1,0 +1,5 @@
+docker pull quay.io/jorgemoralespou/s2i-wildfly-galleon:latest
+
+docker build -t quay.io/jorgemoralespou/s2i-wildfly-galleon:16.0.0.Final -f Dockerfile.16.0.0.Final-full .
+
+docker push quay.io/jorgemoralespou/s2i-wildfly-galleon:16.0.0.Final

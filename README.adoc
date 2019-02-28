@@ -2,10 +2,11 @@
 
 
 == Images
-This repository will create 2 images that will be pushed to online docker registry:
+This repository will create 3 images that will be pushed to online docker registry:
 
 - quay.io/jorgemoralespou/s2i-wildfly-galleon:latest
 - quay.io/jorgemoralespou/s2i-wildfly-galleon:15.0.1.Full
+- quay.io/jorgemoralespou/s2i-wildfly-galleon:16.0.0.Full
 
 
 == Run on OpenShift
@@ -16,11 +17,12 @@ Install the Imagestream in the OpenShift namespace:
 oc apply -f ose3/galleon-s2i-imagestream.yml -n openshift
 ----
 
-This will have installed the Builder images with 3 different versions:
+This will have installed the Builder images with 4 different versions:
 
 * latest
 * full (This is the latest of the images with cached content)
 * 15.0.1.Final 
+* 16.0.0.Final 
 
 Next install the template.
 
