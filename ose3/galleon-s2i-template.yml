@@ -36,7 +36,7 @@ parameters:
   description: Image version to use (latest, full, 16.0.0.Final)
   displayName: Image version
   required: true
-  value: latest
+  value: 16.0.0.Final
 - name: DB_URL_CONNECTION
   description: The database jdbc URL.
   displayName: jdbc URL
